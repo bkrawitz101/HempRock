@@ -1,0 +1,35 @@
+name: Deploy HempRock to IONOS
+
+on:
+  # Allows you to run this deployment manually from the Actions tab on GitHub
+  workflow_dispatch:
+
+  # Optional: Uncomment below when you want automatic deployment on every push to main
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  web-deploy:
+    name: Sync files to IONOS
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📂 Sync files over SFTP / FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: sftp
+          port: 22
+          local-dir: ./
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/*.md
+            .github/**
