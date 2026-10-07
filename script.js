@@ -86,21 +86,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const carbonTrappedDisplay = document.getElementById('carbonTrappedDisplay');
   const concreteEmissionsDisplay = document.getElementById('concreteEmissionsDisplay');
   const netAdvantageDisplay = document.getElementById('netAdvantageDisplay');
+  const carMilesDisplay = document.getElementById('carMilesDisplay');
   const presetButtons = document.querySelectorAll('.preset-btn');
 
   // Baseline formulas:
-  // HempRock captures approx 0.85 lbs CO2 per sq ft applied (50 lbs net per standard 60 sq ft wall bucket batch)
-  // Traditional concrete/stucco generates approx 3.2 lbs CO2 per sq ft
+  // HempRock captures approx 0.83 lbs CO2 per sq ft applied (50 lbs net per standard 60 sq ft wall bucket batch)
+  // Traditional concrete/stucco generates approx 3.15 lbs CO2 per sq ft
+  // EPA standard conversion factor: ~0.88 lbs CO2 emitted per passenger vehicle mile (~400g CO2/mile)
   const calculateImpact = (sqft) => {
     const sqftNum = parseInt(sqft, 10) || 1200;
     const carbonTrapped = Math.round(sqftNum * 0.83); // sequestered lbs CO2
     const concreteEmissions = Math.round(sqftNum * 3.15); // emitted lbs CO2 by concrete
     const netAdvantage = carbonTrapped + concreteEmissions;
+    const equivalentMiles = Math.round(netAdvantage / 0.88);
 
     if (sqftDisplay) sqftDisplay.textContent = `${sqftNum.toLocaleString()} sq. ft.`;
-    if (carbonTrappedDisplay) carbonTrappedDisplay.textContent = `-${carbonTrapped.toLocaleString()} lbs CO₂`;
-    if (concreteEmissionsDisplay) concreteEmissionsDisplay.textContent = `+${concreteEmissions.toLocaleString()} lbs CO₂`;
+    if (carbonTrappedDisplay) carbonTrappedDisplay.textContent = `${carbonTrapped.toLocaleString()} lbs CO₂`;
+    if (concreteEmissionsDisplay) concreteEmissionsDisplay.textContent = `${concreteEmissions.toLocaleString()} lbs CO₂`;
     if (netAdvantageDisplay) netAdvantageDisplay.textContent = `${netAdvantage.toLocaleString()} lbs CO₂`;
+    if (carMilesDisplay) carMilesDisplay.textContent = `Equivalent to driving ~${equivalentMiles.toLocaleString()} fewer passenger car miles`;
   };
 
   if (sqftRange) {
