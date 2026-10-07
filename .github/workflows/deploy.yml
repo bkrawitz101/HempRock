@@ -17,13 +17,12 @@ jobs:
       - name: 🚚 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 📂 Deploy over SFTP (SSH Port 22)
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          port: 22
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local_path: './*'
-          remote_path: '/'
-          sftpArgs: '-o StrictHostKeyChecking=no'
+      - name: 📂 Sync files to IONOS via SSH
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+          sshpass -p "${{ secrets.FTP_PASSWORD }}" rsync -avz \
+            --exclude='.git*' \
+            --exclude='.github' \
+            --exclude='*.md' \
+            -e "ssh -o StrictHostKeyChecking=no -p 22" \
+            ./ ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:./
