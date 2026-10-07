@@ -17,12 +17,7 @@ jobs:
       - name: 🚚 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 📂 Sync files to IONOS via SSH
+      - name: 📂 Sync files to IONOS via SFTP
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
-          sshpass -p "${{ secrets.FTP_PASSWORD }}" rsync -avz \
-            --exclude='.git*' \
-            --exclude='.github' \
-            --exclude='*.md' \
-            -e "ssh -o StrictHostKeyChecking=no -p 22" \
-            ./ ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:./
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" -e "set sftp:auto-confirm yes; mirror -R --verbose --exclude-glob .git* --exclude-glob .github* --exclude-glob *.md ./ ./; quit" sftp://${{ secrets.FTP_SERVER }}:22
