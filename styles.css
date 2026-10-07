@@ -696,7 +696,8 @@ p {
 }
 
 .badge-tag-best,
-.badge-tag-high {
+.badge-tag-high,
+.badge-tag-green {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -707,6 +708,34 @@ p {
   font-size: 0.8rem;
   font-weight: 700;
   border: 1px solid #86EFAC;
+}
+
+.badge-tag-yellow,
+.badge-tag-moderate {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background-color: #FEF3C7;
+  color: #92400E;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid #FCD34D;
+}
+
+.badge-tag-red,
+.badge-tag-low {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background-color: #FEE2E2;
+  color: #991B1B;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid #FCA5A5;
 }
 
 .badge-tag-pending {

@@ -201,27 +201,58 @@ document.addEventListener('DOMContentLoaded', () => {
   const formSuccessBanner = document.getElementById('formSuccessBanner');
 
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Simple client-side UX feedback
       const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'Submit Consultation Request';
+
+      // UX Feedback: Disable button & show spinner
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting Inquiry...';
+        submitBtn.innerHTML = `<span>Sending Inquiry...</span> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path></svg>`;
       }
 
-      setTimeout(() => {
-        if (formSuccessBanner) {
-          formSuccessBanner.classList.add('active');
-          formSuccessBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try {
+        const formData = new FormData(contactForm);
+
+        const response = await fetch('send-email.php', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          if (formSuccessBanner) {
+            formSuccessBanner.classList.add('active');
+            formSuccessBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          contactForm.reset();
+        } else {
+          alert(data.message || 'There was an issue sending your message. Please email info@hemprockplaster.com directly.');
         }
-        contactForm.reset();
+      } catch (err) {
+        console.error('Form submission error:', err);
+        // Smooth local preview fallback when not running on a live PHP server
+        if (window.location.protocol === 'file:') {
+          if (formSuccessBanner) {
+            formSuccessBanner.classList.add('active');
+            formSuccessBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          contactForm.reset();
+        } else {
+          alert('There was a connection issue. Please email info@hemprockplaster.com directly.');
+        }
+      } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit Consultation Request';
+          submitBtn.innerHTML = originalBtnContent;
         }
-      }, 700);
+      }
     });
   }
 
