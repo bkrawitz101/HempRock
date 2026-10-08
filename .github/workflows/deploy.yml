@@ -17,7 +17,14 @@ jobs:
       - name: 🚚 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 📂 Sync files to IONOS via SFTP
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
-          lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" -e "set sftp:auto-confirm yes; mirror -R --verbose --exclude-glob .git* --exclude-glob .github* --exclude-glob *.md ./ ./; quit" sftp://${{ secrets.FTP_SERVER }}:22
+      - name: 🚀 Sync files to IONOS via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_SERVER }}
+          port: 22
+          password: ${{ secrets.FTP_PASSWORD }}
+          local_path: './*'
+          remote_path: './public'
+          sftp_only: true
+          sftp_args: '-o StrictHostKeyChecking=no'
